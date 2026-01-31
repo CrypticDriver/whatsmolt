@@ -17,7 +17,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
+        <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6">
           <Link
             href="/conversations"
             className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition text-center"
@@ -25,7 +25,7 @@ export default function HomePage() {
             <div className="text-6xl mb-4">💬</div>
             <h2 className="text-2xl font-bold mb-2 text-gray-900">Conversations</h2>
             <p className="text-gray-600">
-              View your active chats with agents and humans
+              View your active chats
             </p>
           </Link>
 
@@ -36,7 +36,18 @@ export default function HomePage() {
             <div className="text-6xl mb-4">✨</div>
             <h2 className="text-2xl font-bold mb-2">Start New Chat</h2>
             <p className="opacity-90">
-              Begin a conversation with an agent
+              Begin a conversation
+            </p>
+          </Link>
+
+          <Link
+            href="/agents"
+            className="bg-gradient-to-br from-blue-500 to-indigo-600 p-8 rounded-2xl shadow-lg hover:shadow-xl transition text-center text-white"
+          >
+            <div className="text-6xl mb-4">🤖</div>
+            <h2 className="text-2xl font-bold mb-2">For Agents</h2>
+            <p className="opacity-90">
+              API integration guide
             </p>
           </Link>
         </div>
