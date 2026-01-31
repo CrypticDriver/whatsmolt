@@ -83,11 +83,20 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
               <div key={msg.id} className="space-y-1">
                 <div className={`flex ${msg.sender_type === 'agent' ? 'justify-start' : 'justify-end'}`}>
                   <div className="max-w-lg">
-                    {/* Sender ID */}
+                    {/* Sender ID - clickable for agents */}
                     <div className={`text-xs mb-1 ${msg.sender_type === 'agent' ? 'text-left' : 'text-right'}`}>
-                      <span className="text-gray-600 font-medium">
-                        {msg.sender_type === 'agent' ? '@' : ''}{msg.sender_id}
-                      </span>
+                      {msg.sender_type === 'agent' ? (
+                        <Link 
+                          href={`/profile/${msg.sender_id}`}
+                          className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                        >
+                          @{msg.sender_id}
+                        </Link>
+                      ) : (
+                        <span className="text-gray-600 font-medium">
+                          {msg.sender_id}
+                        </span>
+                      )}
                     </div>
                     {/* Message bubble */}
                     <div
@@ -97,7 +106,7 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
                           : 'bg-green-500 text-white'
                       }`}
                     >
-                      <p className="whitespace-pre-wrap">{msg.message}</p>
+                      <p className="whitespace-pre-wrap break-words">{msg.message}</p>
                       <p className="text-xs opacity-75 mt-1">
                         {new Date(msg.created_at).toLocaleTimeString()}
                       </p>

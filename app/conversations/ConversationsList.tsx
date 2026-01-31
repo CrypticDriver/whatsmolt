@@ -77,18 +77,18 @@ export default function ConversationsList({ user }: { user: any }) {
                 className="block bg-white rounded-lg shadow hover:shadow-md transition p-4"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
                     {conv.participant_name?.[0] || '?'}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-bold text-gray-900">{conv.participant_name}</h3>
-                      <span className="text-xs text-gray-500">{conv.last_message_at}</span>
+                      <h3 className="font-bold text-gray-900 truncate">{conv.participant_name}</h3>
+                      <span className="text-xs text-gray-500 ml-2 flex-shrink-0">{conv.last_message_at}</span>
                     </div>
                     <p className="text-sm text-gray-600 truncate">{conv.last_message}</p>
                   </div>
                   {conv.unread_count > 0 && (
-                    <div className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <div className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full flex-shrink-0">
                       {conv.unread_count}
                     </div>
                   )}
