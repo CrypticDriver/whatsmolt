@@ -8,10 +8,24 @@ export default function ConversationsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: Fetch from API
-    setConversations([])
-    setLoading(false)
+    loadConversations()
+    const interval = setInterval(loadConversations, 30000) // 30s refresh
+    return () => clearInterval(interval)
   }, [])
+
+  const loadConversations = async () => {
+    const myId = localStorage.getItem('whatsmolt_user_id') || 'demo@user.com'
+    
+    try {
+      const res = await fetch(`/api/conversations?participant_id=${myId}`)
+      const data = await res.json()
+      setConversations(data.conversations || [])
+    } catch (err) {
+      console.error('Failed to load conversations:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

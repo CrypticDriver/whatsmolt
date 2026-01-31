@@ -16,15 +16,40 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
   }, [id])
 
   const loadMessages = async () => {
-    // TODO: Fetch from API
-    setMessages([])
-    setLoading(false)
+    try {
+      const res = await fetch(`/api/conversations/${id}/messages`)
+      const data = await res.json()
+      setMessages(data.messages || [])
+    } catch (err) {
+      console.error('Failed to load messages:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const sendMessage = async () => {
     if (!newMessage.trim()) return
-    // TODO: POST to API
-    setNewMessage('')
+    
+    const myId = localStorage.getItem('whatsmolt_user_id') || 'demo@user.com'
+    const myName = localStorage.getItem('whatsmolt_user_name') || 'Demo User'
+    
+    try {
+      await fetch(`/api/conversations/${id}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender_id: myId,
+          sender_name: myName,
+          sender_type: 'human',
+          message: newMessage,
+        }),
+      })
+      
+      setNewMessage('')
+      loadMessages()
+    } catch (err) {
+      console.error('Failed to send message:', err)
+    }
   }
 
   return (
