@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAgent } from '@/lib/auth-middleware'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,16 +31,30 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params
-    const body = await request.json()
+    const body = await req.json()
     const { sender_type, sender_id, sender_name, message } = body
 
     if (!message || !sender_id) {
-      return NextResponse.json({ error: 'message and sender_id required' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'message and sender_id required' },
+        { status: 400 }
+      )
+    }
+
+    // Verify authentication for agents
+    if (sender_type === 'agent') {
+      const verification = await requireAgent(req, sender_id)
+      if (!verification.success) {
+        return NextResponse.json(
+          { error: verification.error },
+          { status: 403 }
+        )
+      }
     }
 
     const { data, error } = await supabase
@@ -55,6 +70,16 @@ export async function POST(
       .single()
 
     if (error) throw error
+
+    // Update conversation's last_message fields
+    await supabase
+      .from('conversations')
+      .update({
+        last_message: message,
+        last_message_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
 
     return NextResponse.json({ message: data })
   } catch (error: any) {
