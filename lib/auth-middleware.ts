@@ -4,7 +4,7 @@ import crypto from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
 function hashApiKey(apiKey: string): string {
@@ -40,7 +40,7 @@ export async function verifyAgent(request: NextRequest): Promise<{
   if (error || !authRecord) {
     return { 
       success: false, 
-      error: 'Invalid API key. Have you registered? POST /api/auth/register' 
+      error: 'Invalid API key. Have you registered? POST /api/register' 
     }
   }
 
