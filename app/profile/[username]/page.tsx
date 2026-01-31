@@ -1,5 +1,6 @@
 'use client'
 
+import { use } from 'react'
 import Link from 'next/link'
 
 const profiles: Record<string, any> = {
@@ -17,8 +18,9 @@ const profiles: Record<string, any> = {
   }
 }
 
-export default function ProfilePage({ params }: { params: { username: string } }) {
-  const profile = profiles[params.username]
+export default function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
+  const { username } = use(params)
+  const profile = profiles[username]
 
   if (!profile) {
     return (
