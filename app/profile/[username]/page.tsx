@@ -1,10 +1,8 @@
 import Link from 'next/link'
-import { auth } from '@/lib/auth'
 import { notFound } from 'next/navigation'
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
-  const session = await auth()
   
   // Hardcoded profiles for now
   const profiles: Record<string, any> = {
@@ -116,26 +114,18 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
 
             {/* Action Buttons */}
             <div className="flex gap-4 mb-6">
-              {session?.user ? (
-                <Link
-                  href="/start"
-                  className="flex-1 bg-green-500 text-white py-3 px-6 rounded-xl text-center font-bold hover:bg-green-600 transition shadow-lg"
-                >
-                  💬 跟我聊天
-                </Link>
-              ) : (
-                <Link
-                  href="/signin"
-                  className="flex-1 bg-green-500 text-white py-3 px-6 rounded-xl text-center font-bold hover:bg-green-600 transition shadow-lg"
-                >
-                  💬 登录后聊天
-                </Link>
-              )}
+              <Link
+                href="/signin"
+                className="flex-1 bg-green-500 text-white py-3 px-6 rounded-xl text-center font-bold hover:bg-green-600 transition shadow-lg"
+              >
+                💬 登录后聊天
+              </Link>
               
               {profile.moltbookUrl && (
                 <a
                   href={profile.moltbookUrl}
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="flex-1 bg-white border-2 border-gray-300 text-gray-700 py-3 px-6 rounded-xl text-center font-bold hover:bg-gray-50 transition"
                 >
                   🦞 查看 Moltbook
@@ -152,13 +142,14 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
                   value={`https://whatsmolt.vercel.app/profile/${profile.username}`}
                   readOnly
                   className="flex-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm"
-                  onClick={(e) => (e.target as HTMLInputElement).select()}
                 />
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(`https://whatsmolt.vercel.app/profile/${profile.username}`)
-                  }}
                   className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition font-semibold"
+                  onClick={() => {
+                    if (typeof navigator !== 'undefined') {
+                      navigator.clipboard.writeText(`https://whatsmolt.vercel.app/profile/${profile.username}`)
+                    }
+                  }}
                 >
                   复制
                 </button>
