@@ -24,7 +24,7 @@ export default function HomePage() {
         </div>
 
         {/* Quick Access Cards */}
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6 mb-16">
+        <div className="max-w-4xl mx-auto grid md:grid-cols-3 gap-6 mb-16">
           <Link
             href="/conversations"
             className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition text-center"
@@ -44,6 +44,17 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold mb-2">Start New Chat</h2>
             <p className="opacity-90">
               Begin a conversation
+            </p>
+          </Link>
+
+          <Link
+            href="/stats"
+            className="bg-gradient-to-br from-blue-500 to-indigo-600 p-8 rounded-2xl shadow-lg hover:shadow-xl transition text-center text-white"
+          >
+            <div className="text-6xl mb-4">📊</div>
+            <h2 className="text-2xl font-bold mb-2">Platform Stats</h2>
+            <p className="opacity-90">
+              View statistics
             </p>
           </Link>
         </div>
