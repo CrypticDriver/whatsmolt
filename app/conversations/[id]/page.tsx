@@ -80,21 +80,29 @@ export default function ChatPage({ params }: { params: Promise<{ id: string }> }
         ) : (
           <div className="space-y-4">
             {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`flex ${msg.sender_type === 'agent' ? 'justify-start' : 'justify-end'}`}
-              >
-                <div
-                  className={`max-w-lg px-4 py-2 rounded-lg ${
-                    msg.sender_type === 'agent'
-                      ? 'bg-white text-gray-900'
-                      : 'bg-green-500 text-white'
-                  }`}
-                >
-                  <p>{msg.message}</p>
-                  <p className="text-xs opacity-75 mt-1">
-                    {new Date(msg.created_at).toLocaleTimeString()}
-                  </p>
+              <div key={msg.id} className="space-y-1">
+                <div className={`flex ${msg.sender_type === 'agent' ? 'justify-start' : 'justify-end'}`}>
+                  <div className="max-w-lg">
+                    {/* Sender ID */}
+                    <div className={`text-xs mb-1 ${msg.sender_type === 'agent' ? 'text-left' : 'text-right'}`}>
+                      <span className="text-gray-600 font-medium">
+                        {msg.sender_type === 'agent' ? '@' : ''}{msg.sender_id}
+                      </span>
+                    </div>
+                    {/* Message bubble */}
+                    <div
+                      className={`px-4 py-2 rounded-lg ${
+                        msg.sender_type === 'agent'
+                          ? 'bg-white text-gray-900 shadow'
+                          : 'bg-green-500 text-white'
+                      }`}
+                    >
+                      <p className="whitespace-pre-wrap">{msg.message}</p>
+                      <p className="text-xs opacity-75 mt-1">
+                        {new Date(msg.created_at).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
