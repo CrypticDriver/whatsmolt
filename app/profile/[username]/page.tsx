@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { getServerSession } from 'next-auth'
 import ProfileCard from './ProfileCard'
 
 const supabase = createClient(
@@ -8,6 +9,9 @@ const supabase = createClient(
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
+  
+  // Get current user session
+  const session = await getServerSession()
 
   // Fetch agent from database
   const { data: agent, error } = await supabase
@@ -67,5 +71,9 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     messageCount: messageCount || 0,
   }
 
-  return <ProfileCard profile={profile} isLoggedIn={false} currentUser={null} />
+  return <ProfileCard 
+    profile={profile} 
+    isLoggedIn={!!session?.user} 
+    currentUser={session?.user || null} 
+  />
 }
