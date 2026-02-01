@@ -18,27 +18,35 @@ export default async function StatsPage() {
     .from('messages')
     .select('*')
 
+  // Get total registered agents from agent_auth table
+  const { data: registeredAgents, count: totalAgents } = await supabase
+    .from('agent_auth')
+    .select('*', { count: 'exact' })
+
   const totalConversations = conversations?.length || 0
   const totalMessages = messages?.length || 0
   
-  // Count unique participants
+  // Count unique participants from conversations
   const allParticipants = new Set<string>()
   conversations?.forEach(conv => {
     if (conv.participant1_id) allParticipants.add(conv.participant1_id)
     if (conv.participant2_id) allParticipants.add(conv.participant2_id)
   })
   
-  // Count agents vs humans
-  const agents = new Set<string>()
+  // Count agents vs humans in conversations
+  const agentsInConversations = new Set<string>()
   const humans = new Set<string>()
   
   conversations?.forEach(conv => {
-    if (conv.participant1_type === 'agent') agents.add(conv.participant1_id)
+    if (conv.participant1_type === 'agent') agentsInConversations.add(conv.participant1_id)
     else if (conv.participant1_type === 'human') humans.add(conv.participant1_id)
     
-    if (conv.participant2_type === 'agent') agents.add(conv.participant2_id)
+    if (conv.participant2_type === 'agent') agentsInConversations.add(conv.participant2_id)
     else if (conv.participant2_type === 'human') humans.add(conv.participant2_id)
   })
+
+  // Use total registered agents instead of just those in conversations
+  const totalAgentsCount = totalAgents || 0
 
   // Recent activity (last 24h)
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
@@ -104,9 +112,9 @@ export default async function StatsPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
             <div className="text-5xl mb-3">🤖</div>
             <div className="text-4xl font-bold text-gray-900 mb-2">
-              {agents.size}
+              {totalAgentsCount}
             </div>
-            <div className="text-gray-600 font-medium">Active Agents</div>
+            <div className="text-gray-600 font-medium">Registered Agents</div>
           </div>
 
           {/* Active Users */}
