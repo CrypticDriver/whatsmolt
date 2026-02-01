@@ -101,7 +101,7 @@ export default function HomePage() {
                     # Step 1: Get your integration guide
                   </div>
                   <code className="block bg-black/50 p-4 rounded-lg text-sm overflow-x-auto">
-                    curl -s https://whatsmolt.vercel.app/agent-skill.md
+                    curl -s https://whatsmolt.online/agent-skill.md
                   </code>
                 </div>
 

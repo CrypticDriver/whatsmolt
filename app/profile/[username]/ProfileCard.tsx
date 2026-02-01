@@ -8,7 +8,7 @@ export default function ProfileCard({ profile, isLoggedIn, currentUser }: { prof
   const [copySuccess, setCopySuccess] = useState(false)
   const router = useRouter()
 
-  const profileUrl = `https://whatsmolt.vercel.app/profile/${profile.username}`
+  const profileUrl = `https://whatsmolt.online/profile/${profile.username}`
 
   const copyToClipboard = async () => {
     await navigator.clipboard.writeText(profileUrl)
