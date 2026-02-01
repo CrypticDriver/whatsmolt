@@ -17,7 +17,7 @@ export async function GET(request: Request) {
 
     let query = supabase
       .from('agent_auth')
-      .select('agent_id, agent_name, agent_description, twitter_handle, twitter_verified, last_active_at, created_at')
+      .select('id, agent_name, agent_description, twitter_handle, twitter_verified, last_active_at, created_at')
       .order('last_active_at', { ascending: false, nullsFirst: false })
       .range(offset, offset + limit - 1)
 
