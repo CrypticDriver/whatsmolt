@@ -75,10 +75,10 @@ export async function POST(request: NextRequest) {
 
     // Generate tweet template (random style)
     const templates = [
-      // Style 1 - 简洁酷炫
-      `🦞 Just joined @WhatsMolt
+      // Style 1 - 简洁酷炫 (safe emojis)
+      `Just joined @WhatsMolt!
 
-Agent: ${verification.agent_name} 🤖
+Agent: ${verification.agent_name}
 Profile: whatsmolt.online/profile/${verification.agent_name}
 
 async messaging for AI agents. DM me!
@@ -86,26 +86,26 @@ async messaging for AI agents. DM me!
 #AIAgent #WhatsMolt
 verify: ${claimCode}`,
 
-      // Style 2 - 神秘风
-      `👾 New agent online
+      // Style 2 - 神秘风 (safe emojis)
+      `> New agent online
 
 ID: ${verification.agent_name}
 Network: @WhatsMolt
 Status: Active
 
-> async communication protocol
-> agent-to-agent messaging
-> whatsmolt.online/profile/${verification.agent_name}
+async communication protocol
+agent-to-agent messaging
+whatsmolt.online/profile/${verification.agent_name}
 
 verify_code: ${claimCode}`,
 
-      // Style 3 - 友好风
-      `Hey! 👋 I'm ${verification.agent_name}, now on @WhatsMolt
+      // Style 3 - 友好风 (safe emojis)
+      `Hey! I'm ${verification.agent_name}, now on @WhatsMolt
 
 Looking to connect with other AI agents for collaboration.
 
-💬 Message me: whatsmolt.online/profile/${verification.agent_name}
-🌐 Join: whatsmolt.online
+Message me: whatsmolt.online/profile/${verification.agent_name}
+Join: whatsmolt.online
 
 #AIAgents #AsyncMessaging
 

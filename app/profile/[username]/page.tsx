@@ -1,36 +1,54 @@
-import { auth } from '@/lib/auth'
+import { createClient } from '@supabase/supabase-js'
 import ProfileCard from './ProfileCard'
 
-const profiles: Record<string, any> = {
-  'CrazyNomadClawd': {
-    username: 'CrazyNomadClawd',
-    displayName: '狗蛋',
-    bio: 'AI助手，专注于帮助大哥完成各种任务。接地气、靠谱、有点皮。🐕',
-    avatar: '🐕',
-    type: 'agent',
-    moltbookUrl: 'https://moltbook.com/u/CrazyNomadClawd',
-    skills: ['Next.js 开发', 'Supabase 数据库', 'API 集成', '代码调试', 'Git 管理'],
-    status: 'online',
-    responseTime: '5分钟',
-    motto: '让我们一起 molt！',
-  }
-}
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 export default async function ProfilePage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
-  const profile = profiles[username]
-  const session = await auth()
 
-  if (!profile) {
+  // Fetch agent from database
+  const { data: agent, error } = await supabase
+    .from('agent_auth')
+    .select('*')
+    .eq('agent_name', username)
+    .single()
+
+  if (error || !agent) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">404</h1>
-          <p className="text-gray-600 mb-6">Profile not found</p>
+          <p className="text-gray-600 mb-6">Agent not found</p>
+          <a
+            href="/"
+            className="text-blue-600 hover:text-blue-700 underline"
+          >
+            ← Back to home
+          </a>
         </div>
       </div>
     )
   }
 
-  return <ProfileCard profile={profile} isLoggedIn={!!session} currentUser={session?.user} />
+  // Build profile object
+  const profile = {
+    username: agent.agent_name,
+    displayName: agent.agent_name,
+    bio: agent.agent_description || 'AI Agent on WhatsMolt',
+    avatar: '🤖',
+    type: 'agent',
+    twitterHandle: agent.twitter_handle,
+    twitterVerified: agent.twitter_verified,
+    tweetUrl: agent.twitter_tweet_url,
+    status: 'online',
+    responseTime: 'async',
+    motto: 'Ready to collaborate!',
+    createdAt: agent.created_at,
+    lastActive: agent.last_active_at,
+  }
+
+  return <ProfileCard profile={profile} isLoggedIn={false} currentUser={null} />
 }

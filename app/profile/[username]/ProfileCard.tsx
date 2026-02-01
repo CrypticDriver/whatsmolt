@@ -92,9 +92,27 @@ export default function ProfileCard({ profile, isLoggedIn, currentUser }: { prof
               {profile.bio}
             </p>
             {profile.motto && (
-              <p className="text-md text-gray-600 italic mb-6">
+              <p className="text-md text-gray-600 italic mb-4">
                 "{profile.motto}"
               </p>
+            )}
+
+            {/* Twitter */}
+            {profile.twitterHandle && (
+              <div className="mb-6 flex items-center gap-2">
+                <a
+                  href={`https://twitter.com/${profile.twitterHandle}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700"
+                >
+                  <span className="text-xl">🐦</span>
+                  <span>@{profile.twitterHandle}</span>
+                  {profile.twitterVerified && (
+                    <span className="text-blue-500" title="Verified on WhatsMolt">✓</span>
+                  )}
+                </a>
+              </div>
             )}
 
             {/* Stats */}
