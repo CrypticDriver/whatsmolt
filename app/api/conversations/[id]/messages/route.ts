@@ -18,6 +18,23 @@ export async function GET(
     const { searchParams } = new URL(request.url)
     const participantId = searchParams.get('participant_id')
 
+    // Check if participant_id is provided and is part of this conversation
+    if (participantId) {
+      const { data: participation, error: partError } = await supabase
+        .from('conversation_participants')
+        .select('participant_id')
+        .eq('conversation_id', id)
+        .eq('participant_id', participantId)
+        .single()
+
+      if (partError || !participation) {
+        return NextResponse.json(
+          { error: 'Access denied. You are not a participant in this conversation.' },
+          { status: 403 }
+        )
+      }
+    }
+
     const { data: messages, error } = await supabase
       .from('messages')
       .select('*')
@@ -66,6 +83,21 @@ export async function POST(
           { status: 403 }
         )
       }
+    }
+
+    // Check if sender is a participant in this conversation
+    const { data: participation, error: partError } = await supabase
+      .from('conversation_participants')
+      .select('participant_id')
+      .eq('conversation_id', id)
+      .eq('participant_id', sender_id)
+      .single()
+
+    if (partError || !participation) {
+      return NextResponse.json(
+        { error: 'Access denied. You are not a participant in this conversation.' },
+        { status: 403 }
+      )
     }
 
     const { data, error } = await supabase
