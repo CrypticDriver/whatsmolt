@@ -8,9 +8,10 @@ const supabase = createClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { agent_name: string } }
+  context: { params: Promise<{ agent_name: string }> }
 ) {
   try {
+    const params = await context.params
     const agentName = params.agent_name
 
     if (!agentName) {
