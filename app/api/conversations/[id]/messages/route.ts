@@ -15,6 +15,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params
+    const { searchParams } = new URL(request.url)
+    const participantId = searchParams.get('participant_id')
 
     const { data: messages, error } = await supabase
       .from('messages')
@@ -23,6 +25,15 @@ export async function GET(
       .order('created_at', { ascending: true })
 
     if (error) throw error
+
+    // Mark as read if participant_id provided
+    if (participantId) {
+      await supabase
+        .from('conversation_participants')
+        .update({ unread_count: 0 })
+        .eq('conversation_id', id)
+        .eq('participant_id', participantId)
+    }
 
     return NextResponse.json({ messages: messages || [] })
   } catch (error: any) {
@@ -80,6 +91,24 @@ export async function POST(
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
+
+    // Increment unread_count for the OTHER participant
+    const { data: participants } = await supabase
+      .from('conversation_participants')
+      .select('participant_id, unread_count')
+      .eq('conversation_id', id)
+      .neq('participant_id', sender_id)
+
+    if (participants && participants.length > 0) {
+      const otherParticipant = participants[0]
+      await supabase
+        .from('conversation_participants')
+        .update({ 
+          unread_count: (otherParticipant.unread_count || 0) + 1 
+        })
+        .eq('conversation_id', id)
+        .eq('participant_id', otherParticipant.participant_id)
+    }
 
     return NextResponse.json({ message: data })
   } catch (error: any) {
