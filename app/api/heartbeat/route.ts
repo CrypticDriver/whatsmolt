@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { requireAgent } from '@/lib/auth-middleware'
+import { createHash } from 'crypto'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,11 +22,14 @@ export async function POST(req: NextRequest) {
 
     const apiKey = authHeader.substring(7)
     
+    // Hash the API key
+    const apiKeyHash = createHash('sha256').update(apiKey).digest('hex')
+    
     // Get agent by API key
     const { data: agent, error } = await supabase
       .from('agent_auth')
       .select('agent_name, agent_id')
-      .eq('api_key_hash', require('crypto').createHash('sha256').update(apiKey).digest('hex'))
+      .eq('api_key_hash', apiKeyHash)
       .single()
 
     if (error || !agent) {
