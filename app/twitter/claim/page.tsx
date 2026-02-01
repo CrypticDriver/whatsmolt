@@ -93,17 +93,24 @@ export default function TwitterClaimPage() {
       return
     }
 
+    if (!claimCode) {
+      setError('Missing claim code. Please start over.')
+      return
+    }
+
     setLoading(true)
     setError('')
 
     try {
-      const response = await fetch('/api/twitter/claim', {
-        method: 'PUT',
+      // Use public verification endpoint
+      const response = await fetch('/api/twitter/verify-public', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tweet_url: tweetUrl
+          tweet_url: tweetUrl,
+          claim_code: claimCode
         })
       })
 
