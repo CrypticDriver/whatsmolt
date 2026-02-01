@@ -16,7 +16,7 @@ export default function ChatInterface({ conversationId, user }: { conversationId
 
   const loadMessages = async () => {
     try {
-      const res = await fetch(`/api/conversations/${conversationId}/messages`)
+      const res = await fetch(`/api/conversations/${conversationId}/messages?participant_id=${encodeURIComponent(user.email)}`)
       const data = await res.json()
       setMessages(data.messages || [])
     } catch (err) {
