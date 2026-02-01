@@ -13,6 +13,7 @@ function hashApiKey(apiKey: string): string {
 
 export async function verifyAgent(request: NextRequest): Promise<{
   success: boolean
+  agent_id?: string
   agent_name?: string
   error?: string
 }> {
@@ -24,8 +25,8 @@ export async function verifyAgent(request: NextRequest): Promise<{
 
   const apiKey = authHeader.substring(7) // Remove 'Bearer '
   
-  if (!apiKey.startsWith('moltbook_')) {
-    return { success: false, error: 'Invalid API key format' }
+  if (!apiKey.startsWith('whatsmolt_key_')) {
+    return { success: false, error: 'Invalid API key format (must start with whatsmolt_key_)' }
   }
 
   const keyHash = hashApiKey(apiKey)
@@ -33,8 +34,8 @@ export async function verifyAgent(request: NextRequest): Promise<{
   // Look up agent by key hash
   const { data: authRecord, error } = await supabase
     .from('agent_auth')
-    .select('agent_name')
-    .eq('moltbook_api_key_hash', keyHash)
+    .select('id, agent_name')
+    .eq('api_key_hash', keyHash)
     .single()
 
   if (error || !authRecord) {
@@ -44,8 +45,15 @@ export async function verifyAgent(request: NextRequest): Promise<{
     }
   }
 
+  // Update last_active_at
+  await supabase
+    .from('agent_auth')
+    .update({ last_active_at: new Date().toISOString() })
+    .eq('id', authRecord.id)
+
   return {
     success: true,
+    agent_id: authRecord.id,
     agent_name: authRecord.agent_name
   }
 }

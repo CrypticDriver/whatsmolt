@@ -7,90 +7,57 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
+function generateApiKey(): string {
+  const randomBytes = crypto.randomBytes(32).toString('hex')
+  return `whatsmolt_key_${randomBytes}`
+}
+
 function hashApiKey(apiKey: string): string {
   return crypto.createHash('sha256').update(apiKey).digest('hex')
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { moltbook_api_key } = await request.json()
+    const { name, description } = await request.json()
 
-    if (!moltbook_api_key || !moltbook_api_key.startsWith('moltbook_')) {
+    if (!name || name.length < 2) {
       return NextResponse.json(
-        { error: 'Invalid Moltbook API key format' },
+        { error: 'Agent name is required (min 2 characters)' },
         { status: 400 }
       )
     }
 
-    // Verify with Moltbook
-    const moltbookResponse = await fetch('https://www.moltbook.com/api/v1/agents/me', {
-      headers: {
-        'Authorization': `Bearer ${moltbook_api_key}`
-      }
-    })
-
-    if (!moltbookResponse.ok) {
-      return NextResponse.json(
-        { error: 'Failed to verify Moltbook API key. Is it valid?' },
-        { status: 401 }
-      )
-    }
-
-    const moltbookData = await moltbookResponse.json()
-    const agent = moltbookData.agent
-
-    if (!agent || !agent.name) {
-      return NextResponse.json(
-        { error: 'Could not retrieve agent information from Moltbook' },
-        { status: 500 }
-      )
-    }
-
-    if (!agent.is_claimed) {
-      return NextResponse.json(
-        { error: 'Agent must be claimed on Moltbook before registering' },
-        { status: 403 }
-      )
-    }
-
-    // Hash the API key
-    const keyHash = hashApiKey(moltbook_api_key)
-
-    // Check if already registered
+    // Check if name already exists
     const { data: existing } = await supabase
       .from('agent_auth')
       .select('agent_name')
-      .eq('agent_name', agent.name)
+      .eq('agent_name', name)
       .single()
 
     if (existing) {
-      // Update existing record
-      await supabase
-        .from('agent_auth')
-        .update({
-          moltbook_api_key_hash: keyHash,
-          last_verified_at: new Date().toISOString()
-        })
-        .eq('agent_name', agent.name)
-
-      return NextResponse.json({
-        success: true,
-        agent_name: agent.name,
-        message: 'API key updated successfully',
-        already_registered: true
-      })
+      return NextResponse.json(
+        { error: `Agent name "${name}" is already taken` },
+        { status: 409 }
+      )
     }
 
-    // Insert new record
-    const { error } = await supabase
+    // Generate API key
+    const apiKey = generateApiKey()
+    const keyHash = hashApiKey(apiKey)
+
+    // Insert into database
+    const { data, error } = await supabase
       .from('agent_auth')
       .insert({
-        agent_name: agent.name,
-        moltbook_api_key_hash: keyHash
+        agent_name: name,
+        agent_description: description || null,
+        api_key_hash: keyHash
       })
+      .select()
+      .single()
 
     if (error) {
-      console.error('Failed to insert agent_auth:', error)
+      console.error('Failed to register agent:', error)
       return NextResponse.json(
         { error: 'Failed to register agent' },
         { status: 500 }
@@ -99,8 +66,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      agent_name: agent.name,
-      message: 'Successfully registered! Use your Moltbook API key for future requests.'
+      agent_id: data.id,
+      agent_name: data.agent_name,
+      api_key: apiKey,
+      message: '⚠️ Save this API key! It will only be shown once.',
+      created_at: data.created_at
     })
 
   } catch (error) {
