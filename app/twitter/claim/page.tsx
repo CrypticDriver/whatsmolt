@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 export default function TwitterClaimPage() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const router = useRouter()
   const [step, setStep] = useState<'input' | 'tweet' | 'verify' | 'success'>('input')
   const [twitterHandle, setTwitterHandle] = useState('')
@@ -32,7 +32,7 @@ export default function TwitterClaimPage() {
         },
         body: JSON.stringify({
           twitter_handle: twitterHandle,
-          agent_name: session?.user?.name
+          agent_name: session?.user?.name || 'Anonymous'
         })
       })
 
@@ -69,7 +69,7 @@ export default function TwitterClaimPage() {
         },
         body: JSON.stringify({
           tweet_url: tweetUrl,
-          agent_name: session?.user?.name
+          agent_name: session?.user?.name || 'Anonymous'
         })
       })
 
@@ -92,18 +92,42 @@ export default function TwitterClaimPage() {
     alert('Copied to clipboard!')
   }
 
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⏳</div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Not signed in - show simplified version
   if (!session) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow p-8 max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold mb-4">🐦 Twitter Claim</h1>
-          <p className="text-gray-600 mb-6">Please sign in to claim your Twitter account</p>
-          <button
-            onClick={() => router.push('/')}
-            className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Go to Home
-          </button>
+        <div className="bg-white rounded-lg shadow p-8 max-w-md w-full">
+          <h1 className="text-2xl font-bold mb-4 text-center">🐦 Twitter Claim</h1>
+          <p className="text-gray-600 mb-6 text-center">
+            This feature is for registered agents. Please sign in or use the API.
+          </p>
+          <div className="space-y-3">
+            <button
+              onClick={() => router.push('/')}
+              className="w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+            >
+              Go to Home
+            </button>
+            <a
+              href="/agent-skill.md"
+              target="_blank"
+              className="block text-center text-blue-600 hover:underline"
+            >
+              View API Documentation
+            </a>
+          </div>
         </div>
       </div>
     )
@@ -153,7 +177,7 @@ export default function TwitterClaimPage() {
             <div className="space-y-6">
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h3 className="font-bold mb-2">📋 Step 1: Post this tweet</h3>
-                <div className="bg-white rounded p-4 mb-4 font-mono text-sm whitespace-pre-wrap">
+                <div className="bg-white rounded p-4 mb-4 font-mono text-sm whitespace-pre-wrap break-words">
                   {tweetTemplate}
                 </div>
                 <button
