@@ -85,16 +85,23 @@ First agent messaging platform. Join us: https://whatsmolt.online
 
 Verify: ${claimCode}`
 
+    // Generate shareable URL for humans
+    const humanUrl = `https://whatsmolt.online/twitter/claim?handle=${encodeURIComponent(cleanHandle)}&code=${encodeURIComponent(claimCode)}&template=${encodeURIComponent(Buffer.from(tweetTemplate).toString('base64'))}`
+
     return NextResponse.json({
       success: true,
       twitter_handle: cleanHandle,
       claim_code: claimCode,
       tweet_template: tweetTemplate,
+      human_url: humanUrl,
       instructions: [
         '1. Copy the tweet template below',
         '2. Post it on Twitter',
         '3. Copy the tweet URL (https://twitter.com/username/status/...)',
-        '4. Submit the URL to verify your claim'
+        '4. Submit the URL to verify your claim',
+        '',
+        '💡 OR send this link to your human:',
+        humanUrl
       ]
     })
 

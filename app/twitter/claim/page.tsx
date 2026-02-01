@@ -17,6 +17,26 @@ export default function TwitterClaimPage() {
   // Only render on client
   useEffect(() => {
     setMounted(true)
+    
+    // Check for URL parameters
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const handle = params.get('handle')
+      const code = params.get('code')
+      const template = params.get('template')
+      
+      if (handle) setTwitterHandle(handle)
+      if (code && template) {
+        setClaimCode(code)
+        // Decode base64 template
+        try {
+          setTweetTemplate(atob(template))
+          setStep('tweet')
+        } catch (e) {
+          // Invalid template, stay on input
+        }
+      }
+    }
   }, [])
 
   if (!mounted) {
