@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       agent_name: verification.agent_name,
-      agent_id: verification.agent_id,
+      id: verification.agent_id,
       last_active_at: now,
       online_until: onlineUntil,
       message: 'Heartbeat received. You are online for the next 10 minutes.'
