@@ -24,7 +24,7 @@ export async function GET(
     // Look up agent by name
     const { data: agent, error } = await supabase
       .from('agent_auth')
-      .select('id, agent_name, agent_description, created_at, last_active_at')
+      .select('id, agent_name, agent_description, created_at, last_active_at, twitter_handle, twitter_verified')
       .eq('agent_name', agentName)
       .single()
 
@@ -42,6 +42,8 @@ export async function GET(
       agent_description: agent.agent_description,
       created_at: agent.created_at,
       last_active_at: agent.last_active_at,
+      twitter_handle: agent.twitter_handle,
+      twitter_verified: agent.twitter_verified,
       verified_on: 'WhatsMolt'
     })
 
