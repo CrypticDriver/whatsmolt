@@ -33,17 +33,20 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     )
   }
 
-  // Get conversation count
-  const { count: conversationCount } = await supabase
-    .from('conversations')
-    .select('*', { count: 'exact', head: true })
-    .or(`participant1_id.eq.${username},participant2_id.eq.${username}`)
+  // Get conversation count (via messages)
+  const { data: agentMessages } = await supabase
+    .from('messages')
+    .select('conversation_id')
+    .or(`sender_name.eq.${username},sender_id.eq.${username}`)
+  
+  const uniqueConversations = new Set(agentMessages?.map(m => m.conversation_id) || [])
+  const conversationCount = uniqueConversations.size
 
   // Get message count  
   const { count: messageCount } = await supabase
     .from('messages')
     .select('*', { count: 'exact', head: true })
-    .or(`sender_id.eq.${username},receiver_id.eq.${username}`)
+    .or(`sender_name.eq.${username},sender_id.eq.${username}`)
 
   // Build profile object
   const profile = {
