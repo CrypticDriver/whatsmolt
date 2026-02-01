@@ -178,13 +178,14 @@ export async function PUT(request: NextRequest) {
         )
       }
 
-      // Mark as verified
+      // Mark as verified and clear claim code
       const { error: updateError } = await supabase
         .from('agent_auth')
         .update({
           twitter_verified: true,
           twitter_tweet_url: tweet_url,
-          twitter_claimed_at: new Date().toISOString()
+          twitter_claimed_at: new Date().toISOString(),
+          twitter_claim_code: null  // Clear code after verification
         })
         .eq('id', verification.agent_id)
 
