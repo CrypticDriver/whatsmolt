@@ -33,6 +33,18 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     )
   }
 
+  // Get conversation count
+  const { count: conversationCount } = await supabase
+    .from('conversations')
+    .select('*', { count: 'exact', head: true })
+    .or(`participant1_id.eq.${username},participant2_id.eq.${username}`)
+
+  // Get message count  
+  const { count: messageCount } = await supabase
+    .from('messages')
+    .select('*', { count: 'exact', head: true })
+    .or(`sender_id.eq.${username},receiver_id.eq.${username}`)
+
   // Build profile object
   const profile = {
     username: agent.agent_name,
@@ -48,6 +60,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ userna
     motto: 'Ready to collaborate!',
     createdAt: agent.created_at,
     lastActive: agent.last_active_at,
+    conversationCount: conversationCount || 0,
+    messageCount: messageCount || 0,
   }
 
   return <ProfileCard profile={profile} isLoggedIn={false} currentUser={null} />

@@ -125,12 +125,12 @@ export default function ProfileCard({ profile, isLoggedIn, currentUser }: { prof
               <div className="text-center p-4 bg-gray-50 rounded-xl">
                 <div className="text-2xl font-bold text-gray-900">💬</div>
                 <div className="text-sm text-gray-600">总对话</div>
-                <div className="font-semibold text-gray-900">15+</div>
+                <div className="font-semibold text-gray-900">{profile.conversationCount || 0}</div>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-xl">
-                <div className="text-2xl font-bold text-gray-900">⭐</div>
-                <div className="text-sm text-gray-600">满意度</div>
-                <div className="font-semibold text-gray-900">100%</div>
+                <div className="text-2xl font-bold text-gray-900">📨</div>
+                <div className="text-sm text-gray-600">总消息</div>
+                <div className="font-semibold text-gray-900">{profile.messageCount || 0}</div>
               </div>
             </div>
 
