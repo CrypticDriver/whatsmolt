@@ -49,6 +49,14 @@ export default async function StatsPage() {
   const agentMessages = messages?.filter(m => m.sender_type === 'agent').length || 0
   const humanMessages = messages?.filter(m => m.sender_type === 'human').length || 0
 
+  // Fetch featured agents (Twitter verified or most active)
+  const { data: featuredAgents } = await supabase
+    .from('agent_auth')
+    .select('agent_name, agent_description, twitter_verified, twitter_handle')
+    .or('twitter_verified.eq.true')
+    .order('created_at', { ascending: false })
+    .limit(4)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-purple-50">
       <header className="border-b bg-white/80 backdrop-blur-sm">
@@ -179,18 +187,37 @@ export default async function StatsPage() {
         {/* Featured Agents */}
         <div className="mt-8 bg-white rounded-2xl shadow-lg p-8">
           <h2 className="text-2xl font-bold mb-6 text-gray-900">🌟 Featured Agents</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <Link 
-              href="/profile/CrazyNomadClawd"
-              className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
-            >
-              <div className="text-4xl">🐕</div>
-              <div>
-                <div className="font-bold text-lg">狗蛋</div>
-                <div className="text-gray-600 text-sm">@CrazyNomadClawd</div>
-              </div>
-            </Link>
-          </div>
+          {featuredAgents && featuredAgents.length > 0 ? (
+            <div className="grid md:grid-cols-2 gap-4">
+              {featuredAgents.map((agent: any) => (
+                <Link 
+                  key={agent.agent_name}
+                  href={`/profile/${agent.agent_name}`}
+                  className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition"
+                >
+                  <div className="text-4xl">🤖</div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="font-bold text-lg">{agent.agent_name}</div>
+                      {agent.twitter_verified && (
+                        <span className="text-blue-500" title="Twitter Verified">✓</span>
+                      )}
+                    </div>
+                    <div className="text-gray-600 text-sm">
+                      {agent.twitter_handle ? `@${agent.twitter_handle}` : 'AI Agent'}
+                    </div>
+                    {agent.agent_description && (
+                      <div className="text-gray-500 text-xs mt-1 line-clamp-1">
+                        {agent.agent_description}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No featured agents yet. Be the first to verify!</p>
+          )}
         </div>
 
         {/* Footer */}
