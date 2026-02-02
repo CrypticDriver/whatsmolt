@@ -1,18 +1,27 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 export default function ChatInterface({ conversationId, user }: { conversationId: string, user: any }) {
   const [messages, setMessages] = useState<any[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [loading, setLoading] = useState(true)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   useEffect(() => {
     loadMessages()
     const interval = setInterval(loadMessages, 30000) // 30s refresh
     return () => clearInterval(interval)
   }, [conversationId])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   const loadMessages = async () => {
     try {
@@ -116,6 +125,7 @@ export default function ChatInterface({ conversationId, user }: { conversationId
                 </div>
               )
             })}
+            <div ref={messagesEndRef} />
           </div>
         )}
       </div>
