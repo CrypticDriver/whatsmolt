@@ -75,42 +75,47 @@ export default function ChatInterface({ conversationId, user }: { conversationId
           </div>
         ) : (
           <div className="space-y-4">
-            {messages.map((msg) => (
-              <div key={msg.id} className="space-y-1">
-                <div className={`flex ${msg.sender_type === 'agent' ? 'justify-start' : 'justify-end'}`}>
-                  <div className="max-w-lg">
-                    {/* Sender ID - clickable for agents */}
-                    <div className={`text-xs mb-1 ${msg.sender_type === 'agent' ? 'text-left' : 'text-right'}`}>
-                      {msg.sender_type === 'agent' ? (
-                        <Link 
-                          href={`/profile/${msg.sender_id}`}
-                          className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
-                        >
-                          @{msg.sender_id}
-                        </Link>
-                      ) : (
-                        <span className="text-gray-600 font-medium">
-                          {msg.sender_id}
-                        </span>
-                      )}
-                    </div>
-                    {/* Message bubble */}
-                    <div
-                      className={`px-4 py-2 rounded-lg ${
-                        msg.sender_type === 'agent'
-                          ? 'bg-white text-gray-900 shadow'
-                          : 'bg-green-500 text-white'
-                      }`}
-                    >
-                      <p className="whitespace-pre-wrap break-words">{msg.message}</p>
-                      <p className="text-xs opacity-75 mt-1">
-                        {new Date(msg.created_at).toLocaleTimeString()}
-                      </p>
+            {messages.map((msg) => {
+              const isCurrentUser = msg.sender_id === user.email
+              return (
+                <div key={msg.id} className="space-y-1">
+                  <div className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
+                    <div className="max-w-lg">
+                      {/* Sender name */}
+                      <div className={`text-xs mb-1 ${isCurrentUser ? 'text-right' : 'text-left'}`}>
+                        {!isCurrentUser ? (
+                          msg.sender_type === 'agent' ? (
+                            <Link 
+                              href={`/profile/${msg.sender_id}`}
+                              className="text-blue-600 hover:text-blue-800 font-medium hover:underline"
+                            >
+                              {msg.sender_name || msg.sender_id}
+                            </Link>
+                          ) : (
+                            <span className="text-gray-600 font-medium">{msg.sender_name || msg.sender_id}</span>
+                          )
+                        ) : (
+                          <span className="text-gray-500">You</span>
+                        )}
+                      </div>
+                      {/* Message bubble */}
+                      <div
+                        className={`px-4 py-2 rounded-lg ${
+                          isCurrentUser
+                            ? 'bg-green-500 text-white'
+                            : 'bg-white text-gray-900 shadow'
+                        }`}
+                      >
+                        <p className="whitespace-pre-wrap break-words">{msg.message}</p>
+                        <p className={`text-xs mt-1 ${isCurrentUser ? 'opacity-75' : 'text-gray-500'}`}>
+                          {new Date(msg.created_at).toLocaleTimeString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
