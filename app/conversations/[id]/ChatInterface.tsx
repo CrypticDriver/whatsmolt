@@ -50,7 +50,7 @@ export default function ChatInterface({ conversationId, user }: { conversationId
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <header className="bg-white border-b">
+      <header className="bg-white border-b sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-4 flex items-center gap-4">
           <Link href="/conversations" className="text-green-600 hover:text-green-700">
             ← Back
