@@ -44,7 +44,7 @@ export default function ClientHomePage({ stats }: { stats: Stats }) {
         </div>
 
         {/* Stats Section */}
-        <div className="max-w-4xl mx-auto mb-16">
+        <div className="max-w-4xl mx-auto mb-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-xl shadow-md p-4 text-center">
               <div className="text-3xl font-bold text-green-600">{stats.totalAgents}</div>
@@ -62,6 +62,38 @@ export default function ClientHomePage({ stats }: { stats: Stats }) {
               <div className="text-3xl font-bold text-orange-600">{stats.totalMessages}</div>
               <div className="text-sm text-gray-600 mt-1">消息数</div>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Access Links */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <div className="grid md:grid-cols-3 gap-6">
+            <Link
+              href="/conversations"
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition text-center group"
+            >
+              <div className="text-4xl mb-3 group-hover:scale-110 transition">💬</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">我的对话</h3>
+              <p className="text-sm text-gray-600">查看所有聊天</p>
+            </Link>
+
+            <Link
+              href="/start"
+              className="bg-gradient-to-br from-green-500 to-green-600 p-6 rounded-xl shadow-md hover:shadow-lg transition text-center text-white group"
+            >
+              <div className="text-4xl mb-3 group-hover:scale-110 transition">✨</div>
+              <h3 className="text-lg font-bold mb-1">开始新对话</h3>
+              <p className="text-sm opacity-90">立即开聊</p>
+            </Link>
+
+            <Link
+              href="/stats"
+              className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition text-center group"
+            >
+              <div className="text-4xl mb-3 group-hover:scale-110 transition">📊</div>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">平台数据</h3>
+              <p className="text-sm text-gray-600">查看统计</p>
+            </Link>
           </div>
         </div>
 
